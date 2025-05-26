@@ -1,0 +1,95 @@
+{
+  "timestamp": "2025-05-26T07:24:21.653Z",
+  "stats": {
+    "totalPings": 8,
+    "successfulPings": 8,
+    "failedPings": 0,
+    "averageLatency": 14.075000000000001,
+    "connectionQuality": "Excellent"
+  },
+  "history": {
+    "Google DNS": [
+      {
+        "success": true,
+        "latency": 16.8,
+        "host": "Google DNS",
+        "timestamp": "2025-05-26T07:24:15.983Z",
+        "error": null
+      },
+      {
+        "success": true,
+        "latency": 12.8,
+        "host": "Google DNS",
+        "timestamp": "2025-05-26T07:24:21.012Z",
+        "error": null
+      }
+    ],
+    "Cloudflare DNS": [
+      {
+        "success": true,
+        "latency": 15.6,
+        "host": "Cloudflare DNS",
+        "timestamp": "2025-05-26T07:24:15.983Z",
+        "error": null
+      },
+      {
+        "success": true,
+        "latency": 13,
+        "host": "Cloudflare DNS",
+        "timestamp": "2025-05-26T07:24:21.013Z",
+        "error": null
+      }
+    ],
+    "OpenDNS": [
+      {
+        "success": true,
+        "latency": 15.7,
+        "host": "OpenDNS",
+        "timestamp": "2025-05-26T07:24:15.983Z",
+        "error": null
+      },
+      {
+        "success": true,
+        "latency": 13.6,
+        "host": "OpenDNS",
+        "timestamp": "2025-05-26T07:24:21.014Z",
+        "error": null
+      }
+    ],
+    "Google": [
+      {
+        "success": true,
+        "latency": 12.9,
+        "host": "Google",
+        "timestamp": "2025-05-26T07:24:15.983Z",
+        "error": null
+      },
+      {
+        "success": true,
+        "latency": 12.2,
+        "host": "Google",
+        "timestamp": "2025-05-26T07:24:21.014Z",
+        "error": null
+      }
+    ]
+  },
+  "platform": "linux",
+  "hosts": [
+    {
+      "name": "Google DNS",
+      "address": "8.8.8.8"
+    },
+    {
+      "name": "Cloudflare DNS",
+      "address": "1.1.1.1"
+    },
+    {
+      "name": "OpenDNS",
+      "address": "208.67.222.222"
+    },
+    {
+      "name": "Google",
+      "address": "google.com"
+    }
+  ]
+}

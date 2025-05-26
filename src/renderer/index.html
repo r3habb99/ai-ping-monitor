@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ping Monitor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="app-title">
+                    <i class="fas fa-wifi"></i>
+                    <h1>AI Ping Monitor</h1>
+                </div>
+                <div class="header-controls">
+                    <button id="settingsBtn" class="btn btn-icon" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button id="minimizeBtn" class="btn btn-icon" title="Minimize to Tray">
+                        <i class="fas fa-window-minimize"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Status Overview -->
+            <section class="status-overview">
+                <div class="status-card primary">
+                    <div class="status-icon" id="connectionIcon">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <div class="status-info">
+                        <h2 id="connectionStatus">Checking...</h2>
+                        <p id="connectionQuality">Analyzing connection...</p>
+                    </div>
+                    <div class="status-controls">
+                        <button id="toggleMonitoring" class="btn btn-primary">
+                            <i class="fas fa-play"></i>
+                            <span>Start</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Statistics Grid -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="avgLatency">0ms</h3>
+                        <p>Average Latency</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="successRate">0%</h3>
+                        <p>Success Rate</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalPings">0</h3>
+                        <p>Total Pings</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="failedPings">0</h3>
+                        <p>Failed Pings</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Host Status -->
+            <section class="host-status">
+                <h3>Host Status</h3>
+                <div class="host-list" id="hostList">
+                    <!-- Host items will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Real-time Chart -->
+            <section class="chart-section">
+                <h3>Latency Trend</h3>
+                <div class="chart-container">
+                    <canvas id="latencyChart" width="400" height="200"></canvas>
+                </div>
+            </section>
+        </main>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button class="modal-close" id="closeSettings">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-group">
+                        <h3>General</h3>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="autoStart">
+                                Start with system
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="minimizeToTray">
+                                Minimize to system tray
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="showNotifications">
+                                Show notifications
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="startMinimized">
+                                Start minimized
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3>Monitoring</h3>
+                        <div class="setting-item">
+                            <label for="pingInterval">Ping Interval (seconds):</label>
+                            <input type="number" id="pingInterval" min="1" max="60" value="5">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3>About</h3>
+                        <div class="about-info">
+                            <p><strong>AI Ping Monitor</strong> v1.0.0</p>
+                            <p>Cross-platform network monitoring tool</p>
+                            <p>Built with Node.js and Electron</p>
+                            <p>© 2025 Rishabh Prajapati</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="saveSettings" class="btn btn-primary">Save Settings</button>
+                    <button id="cancelSettings" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Initializing...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

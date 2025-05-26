@@ -1,0 +1,16 @@
+{
+  "name": "AI Ping Monitor",
+  "short_name": "AI Ping Monitor",
+  "description": "AI-Powered Internet Connectivity Monitor",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "assets/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,297 @@
+{
+  "name": "ai-ping-monitor",
+  "version": "1.0.0",
+  "description": "AI-Powered Internet Ping Monitor - Cross-platform desktop application with system tray integration",
+  "main": "src/main.js",
+  "homepage": "./src/renderer/index.html",
+  "bin": {
+    "ping-monitor": "./ping-monitor.js"
+  },
+  "scripts": {
+    "start": "node ping-monitor.js --start",
+    "test": "node ping-monitor.js --test",
+    "monitor": "node ping-monitor.js",
+    "help": "node ping-monitor.js --help",
+    "electron": "electron .",
+    "electron-dev": "NODE_ENV=development electron .",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "build-mac": "electron-builder --mac",
+    "build-linux": "electron-builder --linux",
+    "build-all": "electron-builder --win --mac --linux",
+    "build-portable": "electron-builder --win portable --mac zip --linux AppImage",
+    "build-stores": "electron-builder --win nsis --mac dmg --linux snap",
+    "build-installers": "electron-builder --win msi --mac pkg --linux deb",
+    "build-user-friendly": "npm run build-portable && npm run build-installers",
+    "build-website": "node scripts/build-website.js",
+    "build-portable-exe": "node scripts/build-portable.js",
+    "deploy-website": "npm run build-website && gh-pages -d website-dist",
+    "dist": "npm run build",
+    "pack": "electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps",
+    "clean": "rimraf dist",
+    "rebuild": "npm run clean && npm install && npm run build",
+    "release": "node scripts/release.js",
+    "publish": "electron-builder --publish=always",
+    "publish-draft": "electron-builder --publish=onTagOrDraft",
+    "sign-mac": "electron-builder --mac --publish=never",
+    "sign-win": "electron-builder --win --publish=never",
+    "test-build": "npm run build && echo 'Desktop build test completed successfully'",
+    "release:patch": "node scripts/release.js patch",
+    "release:minor": "node scripts/release.js minor",
+    "release:major": "node scripts/release.js major"
+  },
+  "keywords": [
+    "ping",
+    "network",
+    "monitoring",
+    "internet",
+    "connectivity",
+    "ai",
+    "nodejs",
+    "electron",
+    "desktop",
+    "system-tray",
+    "cross-platform"
+  ],
+  "author": {
+    "name": "Rishabh Prajapati",
+    "email": "rishabhprajapati411@gmail.com"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/r3habb99/ai-ping-monitor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/r3habb99/ai-ping-monitor/issues"
+  },
+  "os": [
+    "win32",
+    "darwin",
+    "linux"
+  ],
+  "dependencies": {
+    "auto-launch": "^5.0.5",
+    "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.7",
+    "node-notifier": "^10.0.1"
+  },
+  "devDependencies": {
+    "@electron/notarize": "^2.2.1",
+    "@electron/osx-sign": "^1.0.5",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "electron-devtools-installer": "^3.2.0",
+    "gh-pages": "^6.3.0",
+    "rimraf": "^5.0.5"
+  },
+  "build": {
+    "appId": "com.rishabhprajapati.ai-ping-monitor",
+    "productName": "AI Ping Monitor",
+    "copyright": "Copyright © 2025 Rishabh Prajapati",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "ping-monitor.js",
+      "assets/**/*",
+      "SHARED/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "!node_modules/.cache",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{appveyor.yml,.travis.yml,circle.yml}",
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+    ],
+    "extraResources": [
+      {
+        "from": "assets",
+        "to": "assets",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "r3habb99",
+        "repo": "ai-ping-monitor",
+        "releaseType": "release"
+      }
+    ],
+    "afterSign": "scripts/notarize.js",
+    "compression": "maximum",
+    "removePackageScripts": true,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "msi",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "appx",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "requestedExecutionLevel": "asInvoker",
+      "publisherName": "Rishabh Prajapati",
+      "verifyUpdateCodeSignature": false,
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "certificateFile": "certs/windows-cert.p12",
+      "certificatePassword": "",
+      "signingHashAlgorithms": [
+        "sha256"
+      ],
+      "signAndEditExecutable": true,
+      "signDlls": false,
+      "rfc3161TimeStampServer": "http://timestamp.digicert.com"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "pkg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.utilities",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "tar.gz",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Network",
+      "synopsis": "AI-Powered Internet Ping Monitor",
+      "description": "A sophisticated desktop application for monitoring internet connectivity with intelligent analysis and real-time reporting.",
+      "desktop": {
+        "StartupNotify": "true",
+        "Encoding": "UTF-8",
+        "MimeType": "x-scheme-handler/ai-ping-monitor"
+      },
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AI Ping Monitor",
+      "runAfterFinish": true,
+      "menuCategory": "Network",
+      "include": "build/installer.nsh"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "title": "${productName} ${version}",
+      "background": "build/background.png",
+      "window": {
+        "width": 540,
+        "height": 380
+      }
+    },
+    "snap": {
+      "summary": "AI-Powered Internet Ping Monitor",
+      "description": "A sophisticated desktop application for monitoring internet connectivity with intelligent analysis and real-time reporting.",
+      "grade": "stable",
+      "confinement": "strict",
+      "plugs": [
+        "default",
+        "network",
+        "network-bind",
+        "desktop",
+        "desktop-legacy",
+        "x11",
+        "unity7",
+        "browser-support",
+        "network-manager",
+        "gsettings",
+        "audio-playback"
+      ]
+    }
+  }
+}
