@@ -155,7 +155,7 @@ jobs:
             libatspi2.0-0
 
       - name: Setup Windows code signing
-        if: matrix.os == 'windows-latest' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && secrets.WINDOWS_CERTIFICATE != ''
+        if: matrix.os == 'windows-latest' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && env.WINDOWS_CERTIFICATE != ''
         run: |
           mkdir -p certs
           echo "${{ secrets.WINDOWS_CERTIFICATE }}" | base64 --decode > certs/windows-cert.p12
@@ -168,11 +168,11 @@ jobs:
           npm run build-win
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && secrets.WINDOWS_CERTIFICATE != '') && 'certs/windows-cert.p12' || '' }}
+          CSC_LINK: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && env.WINDOWS_CERTIFICATE != '') && 'certs/windows-cert.p12' || '' }}
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
 
       - name: Setup macOS code signing
-        if: matrix.os == 'macos-latest' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && secrets.MACOS_CERTIFICATE != ''
+        if: matrix.os == 'macos-latest' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && env.MACOS_CERTIFICATE != ''
         run: |
           mkdir -p certs
           echo "${{ secrets.MACOS_CERTIFICATE }}" | base64 --decode > certs/macos-cert.p12
@@ -220,7 +220,7 @@ jobs:
           DEBUG=electron-builder npm run build-mac
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && secrets.MACOS_CERTIFICATE != '') && 'certs/macos-cert.p12' || '' }}
+          CSC_LINK: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && env.MACOS_CERTIFICATE != '') && 'certs/macos-cert.p12' || '' }}
           CSC_KEY_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
