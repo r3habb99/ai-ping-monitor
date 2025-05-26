@@ -17,6 +17,11 @@ on:
           - draft
           - prerelease
           - release
+      clear_cache:
+        description: "Clear all caches before build"
+        required: false
+        default: false
+        type: boolean
 
 env:
   NODE_VERSION: "18"
@@ -39,6 +44,21 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
+
+      - name: Clear npm cache
+        if: github.event.inputs.clear_cache == 'true'
+        run: npm cache clean --force
+
+      - name: Clear electron cache
+        if: github.event.inputs.clear_cache == 'true'
+        run: |
+          # Clear electron cache
+          rm -rf ~/.cache/electron || true
+          rm -rf ~/Library/Caches/electron || true
+          rm -rf %LOCALAPPDATA%/electron/Cache || true
+          # Clear electron-builder cache
+          rm -rf ~/.cache/electron-builder || true
+          rm -rf ~/Library/Caches/electron-builder || true
 
       - name: Install dependencies
         run: npm ci
