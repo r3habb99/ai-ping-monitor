@@ -98,6 +98,7 @@
       "output": "dist",
       "buildResources": "build"
     },
+    "icon": "assets/icon",
     "files": [
       "src/**/*",
       "ping-monitor.js",
@@ -131,7 +132,7 @@
         "releaseType": "release"
       }
     ],
-    "afterSign": "scripts/notarize.js",
+    "afterSign": "./scripts/notarize.js",
     "compression": "maximum",
     "removePackageScripts": true,
     "win": {

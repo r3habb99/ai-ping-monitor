@@ -42,6 +42,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Debug environment
+        run: |
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          echo "Working directory: $(pwd)"
+          echo "Directory contents:"
+          ls -la
+          echo "Package.json exists: $(test -f package.json && echo 'yes' || echo 'no')"
+
+      - name: Verify icon files
+        run: |
+          echo "Checking for icon files..."
+          ls -la assets/icon.* || echo "No icon files found in assets/"
+
       - name: Install system dependencies (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -49,24 +63,24 @@ jobs:
           sudo apt-get install -y libnss3-dev libatk-bridge2.0-dev libdrm-dev libxcomposite-dev libxdamage-dev libxrandr-dev libgbm-dev libxss-dev libasound2-dev
 
       - name: Setup Windows code signing
-        if: matrix.os == 'windows-latest' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        if: matrix.os == 'windows-latest' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && secrets.WINDOWS_CERTIFICATE != ''
         run: |
+          mkdir -p certs
           echo "${{ secrets.WINDOWS_CERTIFICATE }}" | base64 --decode > certs/windows-cert.p12
-        env:
-          CSC_LINK: certs/windows-cert.p12
-          CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
 
       - name: Build Electron app (Windows)
         if: matrix.os == 'windows-latest'
         run: |
+          echo "Building Windows app..."
+          echo "CSC_LINK: $CSC_LINK"
           npm run build-win
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: ${{ matrix.os == 'windows-latest' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && 'certs/windows-cert.p12' || '' }}
+          CSC_LINK: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && secrets.WINDOWS_CERTIFICATE != '') && 'certs/windows-cert.p12' || '' }}
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
 
       - name: Setup macOS code signing
-        if: matrix.os == 'macos-latest' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        if: matrix.os == 'macos-latest' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && secrets.MACOS_CERTIFICATE != ''
         run: |
           mkdir -p certs
           echo "${{ secrets.MACOS_CERTIFICATE }}" | base64 --decode > certs/macos-cert.p12
@@ -80,10 +94,14 @@ jobs:
       - name: Build Electron app (macOS)
         if: matrix.os == 'macos-latest'
         run: |
+          echo "Building macOS app..."
+          echo "CSC_LINK: $CSC_LINK"
+          echo "Build directory contents:"
+          ls -la build/ || echo "Build directory not found"
           npm run build-mac
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: ${{ matrix.os == 'macos-latest' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && 'certs/macos-cert.p12' || '' }}
+          CSC_LINK: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && secrets.MACOS_CERTIFICATE != '') && 'certs/macos-cert.p12' || '' }}
           CSC_KEY_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
@@ -92,9 +110,19 @@ jobs:
       - name: Build Electron app (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
+          echo "Building Linux app..."
           npm run build-linux
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Show build output
+        if: always()
+        run: |
+          echo "Build completed. Checking output directory..."
+          ls -la dist/ || echo "Dist directory not found"
+          if [ -d "dist" ]; then
+            find dist -type f -name "*.exe" -o -name "*.dmg" -o -name "*.pkg" -o -name "*.deb" -o -name "*.AppImage" -o -name "*.zip" | head -10
+          fi
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
