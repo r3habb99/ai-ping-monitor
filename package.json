@@ -9,7 +9,12 @@
   },
   "scripts": {
     "start": "node ping-monitor.js --start",
-    "test": "node ping-monitor.js --test",
+    "test": "mocha test/**/*.test.js --timeout 30000",
+    "test:unit": "mocha test/ping-monitor.test.js --timeout 30000",
+    "test:electron": "mocha test/electron-main.test.js --timeout 10000",
+    "test:shared": "mocha test/shared-components.test.js --timeout 10000",
+    "test:cli": "node ping-monitor.js --test",
+    "lint": "echo 'Linting not configured yet'",
     "monitor": "node ping-monitor.js",
     "help": "node ping-monitor.js --help",
     "electron": "electron .",
@@ -88,6 +93,7 @@
     "electron-builder": "^24.9.1",
     "electron-devtools-installer": "^3.2.0",
     "gh-pages": "^6.3.0",
+    "mocha": "^10.2.0",
     "rimraf": "^5.0.5"
   },
   "build": {

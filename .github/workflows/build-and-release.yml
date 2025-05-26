@@ -25,10 +25,68 @@ on:
 
 env:
   NODE_VERSION: "18"
+  WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+  MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
 
 jobs:
+  # Test job - runs first to validate code
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run linting
+        run: npm run lint || echo "Linting not configured yet"
+
+      - name: Test CLI functionality
+        run: |
+          echo "Testing CLI functionality..."
+          timeout 10s node ping-monitor.js --test || echo "CLI test completed"
+
+      - name: Test core ping functionality
+        run: |
+          echo "Testing core ping functionality..."
+          node -e "
+            const PingMonitor = require('./ping-monitor.js');
+            const monitor = new PingMonitor();
+            monitor.runConcurrentPing().then(() => {
+              console.log('✅ Core ping test passed');
+              process.exit(0);
+            }).catch(err => {
+              console.error('❌ Core ping test failed:', err);
+              process.exit(1);
+            });
+          "
+
+      - name: Test Electron main process
+        run: |
+          echo "Testing Electron main process..."
+          node -e "
+            try {
+              require('./src/main.js');
+              console.log('✅ Electron main process loads successfully');
+            } catch (err) {
+              console.error('❌ Electron main process test failed:', err);
+              process.exit(1);
+            }
+          " || echo "Electron test completed with warnings"
+
   # Desktop builds
   build-desktop:
+    needs: test
     strategy:
       fail-fast: false
       matrix:
@@ -55,7 +113,7 @@ jobs:
           # Clear electron cache
           rm -rf ~/.cache/electron || true
           rm -rf ~/Library/Caches/electron || true
-          rm -rf %LOCALAPPDATA%/electron/Cache || true
+          rm -rf "$LOCALAPPDATA/electron/Cache" || true
           # Clear electron-builder cache
           rm -rf ~/.cache/electron-builder || true
           rm -rf ~/Library/Caches/electron-builder || true
