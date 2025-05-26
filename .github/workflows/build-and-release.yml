@@ -25,6 +25,7 @@ jobs:
   # Desktop builds
   build-desktop:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
@@ -60,7 +61,20 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libnss3-dev libatk-bridge2.0-dev libdrm-dev libxcomposite-dev libxdamage-dev libxrandr-dev libgbm-dev libxss-dev libasound2-dev
+          sudo apt-get install -y \
+            libnss3-dev \
+            libatk-bridge2.0-dev \
+            libdrm-dev \
+            libxcomposite-dev \
+            libxdamage-dev \
+            libxrandr-dev \
+            libgbm-dev \
+            libxss-dev \
+            libasound2-dev \
+            libgtk-3-dev \
+            libgconf-2-4 \
+            libxtst6 \
+            libatspi2.0-0
 
       - name: Setup Windows code signing
         if: matrix.os == 'windows-latest' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && secrets.WINDOWS_CERTIFICATE != ''
@@ -91,14 +105,41 @@ jobs:
           security unlock-keychain -p "" build.keychain
           security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
 
+      - name: Setup macOS build configuration
+        if: matrix.os == 'macos-latest'
+        run: |
+          # Create a temporary package.json with conditional afterSign
+          if [[ "${{ github.event_name }}" == "push" && "${{ startsWith(github.ref, 'refs/tags/') }}" == "true" && "${{ secrets.MACOS_CERTIFICATE }}" != "" ]]; then
+            echo "Setting up signed build configuration..."
+            # Add afterSign and entitlements for signed builds
+            node -e "
+              const pkg = require('./package.json');
+              pkg.build.afterSign = './scripts/notarize.js';
+              pkg.build.mac.entitlements = 'build/entitlements.mac.plist';
+              pkg.build.mac.entitlementsInherit = 'build/entitlements.mac.plist';
+              require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+            "
+          else
+            echo "Setting up unsigned build configuration..."
+          fi
+
       - name: Build Electron app (macOS)
         if: matrix.os == 'macos-latest'
         run: |
           echo "Building macOS app..."
           echo "CSC_LINK: $CSC_LINK"
+          echo "Working directory: $(pwd)"
+          echo "Directory contents:"
+          ls -la
           echo "Build directory contents:"
           ls -la build/ || echo "Build directory not found"
-          npm run build-mac
+          echo "Assets directory contents:"
+          ls -la assets/ || echo "Assets directory not found"
+          echo "Package.json exists: $(test -f package.json && echo 'yes' || echo 'no')"
+          echo "Checking package.json build config:"
+          node -e "console.log('Icon config:', require('./package.json').build.icon)"
+          echo "Running electron-builder with debug..."
+          DEBUG=electron-builder npm run build-mac
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && secrets.MACOS_CERTIFICATE != '') && 'certs/macos-cert.p12' || '' }}
