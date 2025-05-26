@@ -25,6 +25,7 @@
     "build-user-friendly": "npm run build-portable && npm run build-installers",
     "build-website": "node scripts/build-website.js",
     "build-portable-exe": "node scripts/build-portable.js",
+    "build-simple": "electron-builder --linux AppImage --win portable",
     "deploy-website": "npm run build-website && gh-pages -d website-dist",
     "dist": "npm run build",
     "pack": "electron-builder --dir",
@@ -166,12 +167,12 @@
       "publisherName": "Rishabh Prajapati",
       "verifyUpdateCodeSignature": false,
       "artifactName": "${productName}-${version}-${arch}.${ext}",
-      "certificateFile": "certs/windows-cert.p12",
+      "certificateFile": "",
       "certificatePassword": "",
       "signingHashAlgorithms": [
         "sha256"
       ],
-      "signAndEditExecutable": true,
+      "signAndEditExecutable": false,
       "signDlls": false,
       "rfc3161TimeStampServer": "http://timestamp.digicert.com"
     },
@@ -210,12 +211,6 @@
       "target": [
         {
           "target": "deb",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "rpm",
           "arch": [
             "x64"
           ]
